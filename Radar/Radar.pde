@@ -28,6 +28,7 @@ String str = "";
 
 float fa = 0.0, fb = 0.0; // for radar
 
+
 class Threat {
     float x = 0.0, y = 0.0, d = 0.0, angle = 0, speed = 0.0, eta = 0.0;
     boolean isvalid = false; // if it is true, it will be shown and will be counted and its coordinates updated
@@ -68,8 +69,8 @@ class Threat {
     }
 }
 
-
 Threat threat[];
+
 
 class Missiles {
     float x = 0.0, y = 0.0, d = 0.0, angle = 0, speed = 0.0;
@@ -116,275 +117,222 @@ class Missiles {
     }
 }
 
-
 Missiles missiles[];
 
-void radarcoordinates()
-{
-  fa = 0.0;
-  fb = 0.0;
-  if (swipe_angle>TWO_PI)
-  {
-    swipe_angle = swipe_angle - TWO_PI; // to prevent an overflow
-  }
-  fa = circl * cos(swipe_angle) + posx;
-  fb = circl * sin(swipe_angle) + posy;
-}
-void radarcoordinates(float i)
-{
-  fa = 0.0;
-  fb = 0.0;
-  if (swipe_angle>TWO_PI)
-  {
-    swipe_angle = swipe_angle - TWO_PI;
-  }
-  fa = circl * cos(swipe_angle - i) + posx;
-  fb = circl * sin(swipe_angle - i) + posy;
+
+void radarcoordinates() {
+    fa = 0.0; fb = 0.0;
+    swipe_angle %= TWO_PI;
+    
+    fa = circl * cos(swipe_angle) + posx;
+    fb = circl * sin(swipe_angle) + posy;
 }
 
-void swipe()
-{
+void radarcoordinates(float i) {
+    fa = 0.0; fb = 0.0;
+    swipe_angle %= TWO_PI;
+    
+    fa = circl * cos(swipe_angle - i) + posx;
+    fb = circl * sin(swipe_angle - i) + posy;
+}
 
-  fa = 0.0;
-  fb = 0.0;
-  radarcoordinates();
-  stroke(0, 255, 0);
-  line(posx, posy, fa, fb);
-  float c = 155;
-  float i = 0.0;
-
-  for (i =  0; i<0.1; i = i + 0.0003) // the swiping effect. if the swiping effect is increased, fps drops.
-  {
-    fa = 0.0;
-    fb = 0.0;
-    radarcoordinates(i);
-    stroke(0, c, 0);
-    c = c - 0.7;
+void swipe() {
+    fa = 0.0; fb = 0.0;
+    radarcoordinates();
+    stroke(0, 255, 0);
     line(posx, posy, fa, fb);
-  }
-  swipe_angle = swipe_angle + swipe_speed;
-}
+    float c = 155;
 
-void refr() // for refreshing the game screen
-{
-  background(0);
-  swipe();
-  enemylog = 0;
-  noStroke();
-  fill(0, 255, 0);
-  ellipse(posx, posy, 10, 10);
-
-  stroke(0, 255, 0);
-  noFill();
-  int i = 0;
-  for (i = 1; i <= (min(width, height)/100); i++)
-  {
-    ellipse(posx, posy, i * 100, i * 100);
-  }
-  i = (i - 1) * 50;
-
-  line(posx, (posy - i), posx, (posy + i));
-  line((posx - i), posy, (posx + i), posy);
-
-  circl = i;
-}
-
-void refr(int i) // refreshing the gamescreen if we won or lost
-{
-  background(0);
-  enemylog = 0;
-  noStroke();
-  fill(0, 255, 0);
-  ellipse(posx, posy, 10, 10);
-
-  stroke(0, 255, 0);
-  noFill();
-
-  for (i = 1; i <= (min(width, height)/100); i++)
-  {
-    ellipse(posx, posy, i * 100, i * 100);
-  }
-  i = (i - 1) * 50;
-
-  line(posx, (posy - i), posx, (posy + i));
-  line((posx - i), posy, (posx + i), posy);
-
-  circl = i;
-}
-
-void clearing() // refreshing and creating new enemies
-{
-  refr();
-  score = 0.0;
-  enemylimit = (int)ceil(random(enemylimit - 5, enemylimit + 5));
-  threat = new Threat [enemylimit];
-  for (int i = 0; i<enemylimit; i++)
-  {
-    threat [i] = new Threat();
-    threat [i].isvalid = true;
-  }
-  missiles = new Missiles [missilelimit];
-  for (int i = 0; i<missilelimit; i++)
-  {
-    missiles [i] = new Missiles();
-  }
-}
-
-void setup()
-{
-  size(820, 620);
-
-  clearing();
-}
-
-void launchmissiles()
-{
-  if (missilelog<missilelimit)
-  {
-    for (int i = 0; i<missilelimit; i++)
-    {
-      if (!missiles[i].isvalid) // creating new objects in place of outdated missiles
-      {
-        missiles[i] = new Missiles();
-        missiles[i].isvalid = true;
-        return;
-      }
+    for (double i =  0; i < 0.1; i += 0.0003) { // swiping effect
+        fa = 0.0; fb = 0.0;
+        radarcoordinates(i);
+        stroke(0, c, 0);
+        c -= 0.7;
+        line(posx, posy, fa, fb);
     }
-  }
+    swipe_angle += swipe_speed;
 }
 
-void message()
-{
-  noStroke();
-  fill(0, 195, 0);
-  textAlign(LEFT);
-  textSize(11);
-  str = "Point with your cursor and click\nto shoot a missile.\nYou can have only "+ missilelimit +" missiles in air.\nYou will be penalised for losing missiles.\nThe farthest you can aim\nThe higher your score!\n"+ score();
-  text(str, 580, 50);
+void refr() { // for refreshing the game screen
+    background(0);
+    swipe();
+    enemylog = 0;
+    noStroke();
+    fill(0, 255, 0);
+    ellipse(posx, posy, 10, 10);
+
+    stroke(0, 255, 0);
+    noFill();
+    int i = 0;
+    for (i = 1; i <= (min(width, height) / 100); i++)
+        ellipse(posx, posy, i * 100, i * 100);
+    i = (i - 1) * 50;
+
+    line(posx, (posy - i), posx, (posy + i));
+    line((posx - i), posy, (posx + i), posy);
+
+    circl = i;
 }
 
-String score()
-{
-  return "Your score is: " + (int)(ceil(score));
+void refr(int i) { // refreshing the gamescreen if we won or lost
+    background(0);
+    enemylog = 0;
+    noStroke();
+    fill(0, 255, 0);
+    ellipse(posx, posy, 10, 10);
+
+    stroke(0, 255, 0);
+    noFill();
+
+    for (i = 1; i <= (min(width, height) / 100); i++)
+        ellipse(posx, posy, i * 100, i * 100);
+    i = (i - 1) * 50;
+
+    line(posx, (posy - i), posx, (posy + i));
+    line((posx - i), posy, (posx + i), posy);
+
+    circl = i;
 }
 
-void missile_vanishes() //missile vanishes if
-{
-  for (int i = 0; i<missilelimit; i++)
-  {
-    if (missiles[i].isvalid)
-    {
-      missiles[i].isoutofbounds(); // it moves too far
+void clearing() { // refreshing and creating new enemies
+    refr();
+    score = 0.0;
+    enemylimit = (int) ceil(random(enemylimit - 5, enemylimit + 5));
+
+    threat = new Threat [enemylimit];
+    for (int i = 0; i < enemylimit; i++) {
+        threat [i] = new Threat();
+        threat [i].isvalid = true;
     }
-  }
-  for (int i = 0; i<enemylimit; i++)
-  {
-    for (int j = 0; j<missilelimit; j++)
-    {
-      if (threat[i].isvalid && missiles[j].isvalid)
-      {
-        missiles[j].hasreachedtarget(threat[i]); // or has reached its target
-      }
-    }
-  }
+  
+    missiles = new Missiles [missilelimit];
+    for (int i = 0; i < missilelimit; i++)
+        missiles [i] = new Missiles();
 }
 
-void threatattacks()
-{
-  for (int i = 0; i<enemylimit; i++)
-  {
-    if (threat[i].isvalid)
-    {
-      threat[i].hasreachedtarget(); // checking if any enemy has reached airbase
-    }
-  }
-}
-
-void blipsonradar() // to show who is where
-{
-  for (int i = 0; i<enemylimit; i++)
-  {
-    if (threat[i].isvalid)
-    {
-      threat[i].show();
-      threat[i].new_coordinate();
-      enemylog++;
-    }
-  }
-  if (enemylog == 0) // if no enemy remains
-  {
-    game_state = 2; // game won
-    return;
-  }
-  for (int i = 0; i<missilelimit; i++)
-  {
-    if (missiles[i].isvalid)
-    {
-      missiles[i].show();
-      missiles[i].new_coordinate();
-    }
-  }
-}
-
-void gamescreen() 
-{
-  refr();
-  missile_vanishes();
-  threatattacks();
-  message();
-  blipsonradar();
-}
-
-void mousePressed()
-{
-  if (game_state == 1)
-  {
-    launchmissiles();
-  } else if (game_state == 0||game_state == 2) // game over or game win screen
-  {
-    game_state = 1;
+void setup() {
+    size(820, 620);
     clearing();
-  }
 }
 
-void keyPressed()
-{
-  if (game_state == 1 && key=='l')
-  {
-    launchmissiles();
-  }
+void launchmissiles() {
+    if (missilelog < missilelimit) {
+        for (int i = 0; i<missilelimit; i++) {
+            if (!missiles[i].isvalid) { // creating new objects in place of outdated missiles
+                missiles[i] = new Missiles();
+                missiles[i].isvalid = true;
+                return;
+            }
+        }
+    }
+}
+
+void message() {
+    noStroke();
+    fill(0, 195, 0);
+    textAlign(LEFT);
+    textSize(11);
+    str = "Point with your cursor and click\nto shoot a missile.\nYou can have only " +
+        missilelimit + " missiles in air.\nYou will be penalised for losing missiles.\n" +
+        "The farthest you can aim\nThe higher your score!\n" + score();
+    text(str, 580, 50);
+}
+
+String score() {
+    return "Your score is: " + (int) (ceil(score));
+}
+
+void missile_vanishes() { //missile vanishes if
+    for (int i = 0; i < missilelimit; i++)
+        if (missiles[i].isvalid)
+            missiles[i].isoutofbounds(); // it moves too far
+
+    for (int i = 0; i < enemylimit; i++) {
+        for (int j = 0; j < missilelimit; j++) {
+            if (threat[i].isvalid && missiles[j].isvalid)
+                missiles[j].hasreachedtarget(threat[i]); // or has reached its target
+        }
+    }
+}
+
+void threatattacks() {
+    for (int i = 0; i < enemylimit; i++) {
+        if (threat[i].isvalid)
+            threat[i].hasreachedtarget(); // checking if any enemy has reached airbase
+    }
+}
+
+void blipsonradar() { // to show who is where
+    for (int i = 0; i < enemylimit; i++) {
+        if (threat[i].isvalid) {
+            threat[i].show();
+            threat[i].new_coordinate();
+            enemylog++;
+        }
+    }
+
+    if (enemylog == 0) { // if no enemy remains
+        game_state = 2; // game won
+        return;
+    }
+
+    for (int i = 0; i < missilelimit; i++) {
+        if (missiles[i].isvalid) {
+            missiles[i].show();
+            missiles[i].new_coordinate();
+        }
+    }
+}
+
+void gamescreen() {
+    refr();
+    missile_vanishes();
+    threatattacks();
+    message();
+    blipsonradar();
+}
+
+void mousePressed() {
+    if (game_state == 1)
+        launchmissiles();
+    else if (game_state == 0 || game_state == 2) { // game over or game win screen
+        game_state = 1;
+        clearing();
+    }
+}
+
+void keyPressed() {
+    if (game_state == 1 && key=='l')
+        launchmissiles();
 }
 
 void gameoverscreen() {
-  refr(1);
-  noStroke();
-  fill(255, 0, 0);
-  textAlign(CENTER);
-  textSize(28);
-  text("!!AIRBASE DESTROYED!! \n"+ score() +"\n Click to restart.", posx, posy);
-  message();
+    refr(1);
+    noStroke();
+    fill(255, 0, 0);
+    textAlign(CENTER);
+    textSize(28);
+    text("!!AIRBASE DESTROYED!! \n" + score() + "\n click to restart", posx, posy);
+    message();
 }
-void gamewinscreen() {
-  refr(1);
-  noStroke();
-  fill(255, 0, 0);
-  textAlign(CENTER);
-  textSize(28);
-  text("!!AIRBASE PROTECTED!! \n"+ score() +"\n click to restart.", posx, posy);
-  message();
-}
-void draw()
-{
-  frameRate(fps);
 
-  if (game_state == 1)
-  {
-    gamescreen();
-  } else if (game_state == 0)
-  {
-    gameoverscreen();
-  } else if (game_state == 2)
-  {
-    gamewinscreen();
-  }
+void gamewinscreen() {
+    refr(1);
+    noStroke();
+    fill(255, 0, 0);
+    textAlign(CENTER);
+    textSize(28);
+    text("!!AIRBASE PROTECTED!! \n" + score() + "\n click to restart", posx, posy);
+    message();
+}
+
+void draw() {
+    frameRate(fps);
+
+    if (game_state == 0)
+        gameoverscreen();
+    else if (game_state == 1)
+        gamescreen();
+    else if (game_state == 2)
+        gamewinscreen();
 }
