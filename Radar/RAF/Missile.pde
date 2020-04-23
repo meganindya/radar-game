@@ -33,4 +33,8 @@ class Missile {
     boolean outOfBounds() {
         return dist >= detectableRange ? true : false;
     }
+
+    float getAngle() {
+        return angle;
+    }
 }
