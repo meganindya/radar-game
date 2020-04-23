@@ -18,7 +18,7 @@ class Threat {
         ellipse(posX, posY, size, size);
     }
 
-    void refreshPosition() {
+    void updatePosition() {
         dist -= speed;
         posX = radius + (int) (dist * cos(angle));
         posY = radius + (int) (dist * sin(angle));
