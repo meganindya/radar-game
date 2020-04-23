@@ -20,6 +20,7 @@ HashMap<Integer, ArrayList<Threat>> angleMap;
 ArrayList<Threat> threats;
 final int threatCount = 5;
 ArrayList<Missile> missiles;
+final int missileMax = 5;
 boolean baseDestroyed;
 
 boolean started = false;
@@ -224,12 +225,14 @@ void mousePressed() {
         started = true;
     else {
         if (state == 0) {
-            Missile missile =
-                new Missile(radius, mouseX, mouseY);
-            missiles.add(missile);
-            int missileScore = getScore(missile);
-            if (missileScore != 0)
-                missileScoreMap.put(missile, missileScore);
+            if (missiles.size() < missileMax) {
+                Missile missile =
+                    new Missile(radius, mouseX, mouseY);
+                missiles.add(missile);
+                int missileScore = getScore(missile);
+                if (missileScore != 0)
+                    missileScoreMap.put(missile, missileScore);
+            }
         }
         else
             reset();
