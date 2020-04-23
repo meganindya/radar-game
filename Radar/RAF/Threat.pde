@@ -27,4 +27,8 @@ class Threat {
     boolean reachedBase() {
         return dist < 10 ? true : false;
     }
+
+    float getAngle() {
+        return angle;
+    }
 }
