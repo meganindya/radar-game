@@ -1,9 +1,12 @@
 class Missile {
     static final float speed = 3, size = 3;
     private float angle, dist;
-    private int posX, posY, detectableRange;
+    private int launchX, launchY, posX, posY, detectableRange, id;
 
     Missile(int radius, int posX, int posY) {
+        launchX = posX;
+        launchY = posY;
+
         posX -= radius;
         posY -= radius;
         angle = atan((float) -posY / (float) posX);
@@ -40,5 +43,9 @@ class Missile {
 
     int[] getPosition() {
         return new int[]{ posX, posY };
+    }
+
+    int[] getLaunchPosition() {
+        return new int[]{ launchX, launchY };
     }
 }

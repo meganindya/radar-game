@@ -1,5 +1,5 @@
 class Threat {
-    static final float minSpeed = 0.3, maxSpeed = 0.6, size = 5;
+    static final float minSpeed = 0.3, maxSpeed = 0.6, size = 6;
     private float angle, speed, dist;
     private int posX, posY;
 
@@ -34,5 +34,13 @@ class Threat {
 
     int[] getPosition() {
         return new int[]{ posX, posY };
+    }
+
+    float getDistance() {
+        return dist;
+    }
+
+    float getSpeed() {
+        return speed;
     }
 }

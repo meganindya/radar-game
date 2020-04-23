@@ -18,13 +18,14 @@ float swipeAngle, swipeSpeed;
 // action bodies
 HashMap<Integer, ArrayList<Threat>> angleMap;
 ArrayList<Threat> threats;
-final int threatCount = 50;
+final int threatCount = 5;
 ArrayList<Missile> missiles;
 boolean baseDestroyed;
 
 boolean started = false;
 
 int score, hiscore = 0;
+HashMap<Missile, Integer> missileScoreMap;
 
 
 // Methods
@@ -62,6 +63,7 @@ void reset() {
     baseDestroyed = false;
 
     score = 0;
+    missileScoreMap = new HashMap<Missile, Integer>();
 }
 
 void draw() {
@@ -106,6 +108,8 @@ void draw() {
 // redraws the canvas
 void refreshCanvas() {
     background(0);
+
+    displayScores();
 
     // radar circles
     stroke(0, 255, 255);
@@ -174,7 +178,7 @@ void checkMissileCollisions() {
                     pow(missilePos[0] - threatPos[0], 2) +
                     pow(missilePos[1] - threatPos[1], 2)
                 );
-            if (dist <= (Missile.size + Threat.size)) {
+            if (dist <= ((Missile.size + Threat.size) / 1.5)) {
                 threats.remove(threat);
                 missileRemoveList.add(missile);
                 break;
@@ -182,8 +186,16 @@ void checkMissileCollisions() {
         }
     }
 
-    for (Missile missile : missileRemoveList)
+    for (Missile missile : missileRemoveList) {
         missiles.remove(missile);
+
+        if (!missileScoreMap.containsKey(missile))
+            continue;
+        score += missileScoreMap.get(missile);
+        if (score > hiscore)
+            hiscore = score;
+        missileScoreMap.remove(missile);
+    }
 }
 
 // game over condition
@@ -211,9 +223,73 @@ void mousePressed() {
     if (!started)
         started = true;
     else {
-        if (state == 0)
-            missiles.add(new Missile(radius, mouseX, mouseY));
+        if (state == 0) {
+            Missile missile =
+                new Missile(radius, mouseX, mouseY);
+            missiles.add(missile);
+            int missileScore = getScore(missile);
+            if (missileScore != 0)
+                missileScoreMap.put(missile, missileScore);
+        }
         else
             reset();
     }
+}
+
+// calculates score to be added when missile eliminates a threat
+int getScore(Missile missile) {
+    int sectorNumber = (int) (missile.getAngle() / (15 * PI / 180));
+    ArrayList<Threat> threatList = new ArrayList<Threat>();
+    for (int i = -1; i <= 1; i++) {
+        int secNum = sectorNumber + i;
+        if (secNum < 0)
+            secNum += 24;
+        if (!angleMap.containsKey(secNum))
+            continue;
+        threatList.addAll(angleMap.get(secNum));
+    }
+
+    if (threatList.isEmpty())
+        return 0;
+
+    float slope = tan(missile.getAngle());
+    ArrayList<Threat> possibleThreats = new ArrayList<Threat>();
+    for (Threat threat : threatList) {
+        int threatPos[] = threat.getPosition();
+        threatPos[0] -= baseX;
+        threatPos[1] -= baseY;
+        float dist = abs(threatPos[1] + slope * threatPos[0]);
+        if (dist <= ((Missile.size + Threat.size) / 1.5))
+            possibleThreats.add(threat);
+    }
+
+    if (possibleThreats.isEmpty())
+        return 0;
+
+    Threat nearestThreat = possibleThreats.get(0);
+    for (Threat threat : possibleThreats) {
+        if (threat == nearestThreat)
+            continue;
+
+        if (
+            threat.getDistance() / threat.getSpeed() <
+            nearestThreat.getDistance() / nearestThreat.getSpeed()
+        )
+            nearestThreat = threat;
+    }
+
+    int missilePos[] = missile.getLaunchPosition();
+    int threatPos[] = nearestThreat.getPosition();
+    float aimDistance =
+        dist(missilePos[0], missilePos[1], threatPos[0], threatPos[1]);
+
+    return 1 + (int) (aimDistance / 25);
+}
+
+void displayScores() {
+    textAlign(LEFT);
+    textSize(16);
+    fill(255, 255, 255);
+    text("Hi-score: " + str(hiscore), 10, 25);
+    text("Score: " + str(score), 10, 50);
 }
