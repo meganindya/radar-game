@@ -18,9 +18,11 @@ float swipeAngle, swipeSpeed;
 // action bodies
 HashMap<Integer, ArrayList<Threat>> angleMap;
 ArrayList<Threat> threats;
-final int threatCount = 5;
+final int threatCount = 50;
 ArrayList<Missile> missiles;
 boolean baseDestroyed;
+
+boolean started = false;
 
 
 // Methods
@@ -60,12 +62,17 @@ void reset() {
 
 void draw() {
     int state = getGameState();
-    if (state != 0) {
+    if (started && state != 0) {
         gameOver(state);
         return;
     }
 
     refreshCanvas();
+
+    if (!started) {
+        gameOver(2);
+        return;
+    }
 
     checkMissileCollisions();
 
@@ -178,25 +185,31 @@ void checkMissileCollisions() {
 // game over condition
 void gameOver(int state) {
     fill(255);
-    rect(baseX - 110, baseY - 50, 220, 100, 10);
+    rect(baseX - 140, baseY - 50, 280, 100, 10);
 
     textAlign(CENTER);
     textSize(32);
     if (state == 1) {
         fill(0, 63, 191);
         text("You win!", baseX, baseY + 12);
-    } else {
+    } else if (state == -1) {
         fill(255, 0, 127);
         text("You lose!", baseX, baseY + 12);
+    } else {
+        fill(0, 127, 63);
+        text("Click to start", baseX, baseY + 12);
     }
 }
 
 // mouse press event
 void mousePressed() {
     int state = getGameState();
-    if (state == 0)
-        missiles.add(new Missile(radius, mouseX, mouseY));
+    if (!started)
+        started = true;
     else {
-        reset();
+        if (state == 0)
+            missiles.add(new Missile(radius, mouseX, mouseY));
+        else
+            reset();
     }
 }
