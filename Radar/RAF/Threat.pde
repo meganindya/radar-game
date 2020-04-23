@@ -31,4 +31,8 @@ class Threat {
     float getAngle() {
         return angle;
     }
+
+    int[] getPosition() {
+        return new int[]{ posX, posY };
+    }
 }
