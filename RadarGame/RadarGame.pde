@@ -24,6 +24,8 @@ boolean baseDestroyed;
 
 boolean started = false;
 
+int score, hiscore = 0;
+
 
 // Methods
 // -------
@@ -58,6 +60,8 @@ void reset() {
 
     missiles = new ArrayList<Missile>();
     baseDestroyed = false;
+
+    score = 0;
 }
 
 void draw() {
