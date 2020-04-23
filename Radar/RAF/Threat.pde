@@ -9,7 +9,7 @@ class Threat {
         dist  = random(radius - 50, radius - 5);
 
         posX = radius + (int) (dist * cos(angle));
-        posY = radius + (int) (dist * sin(angle));
+        posY = radius - (int) (dist * sin(angle));
     }
 
     void render() {
@@ -21,7 +21,7 @@ class Threat {
     void updatePosition() {
         dist -= speed;
         posX = radius + (int) (dist * cos(angle));
-        posY = radius + (int) (dist * sin(angle));
+        posY = radius - (int) (dist * sin(angle));
     }
 
     boolean reachedBase() {
