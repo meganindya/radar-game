@@ -1,5 +1,5 @@
 class Threat {
-    private static final float minSpeed = 0.3, maxSpeed = 0.6, size = 5;
+    static final float minSpeed = 0.3, maxSpeed = 0.6, size = 5;
     private float angle, speed, dist;
     private int posX, posY;
 

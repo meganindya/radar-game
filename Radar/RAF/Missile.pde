@@ -1,5 +1,5 @@
 class Missile {
-    private static final float speed = 3, size = 2.5;
+    static final float speed = 3, size = 2.5;
     private float angle, dist;
     private int posX, posY, detectableRange;
 
