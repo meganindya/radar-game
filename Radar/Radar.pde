@@ -143,7 +143,7 @@ void swipe() {
     line(posx, posy, fa, fb);
     float c = 155;
 
-    for (double i =  0; i < 0.1; i += 0.0003) { // swiping effect
+    for (float i =  0; i < 0.1; i += 0.0003) { // swiping effect
         fa = 0.0; fb = 0.0;
         radarcoordinates(i);
         stroke(0, c, 0);
