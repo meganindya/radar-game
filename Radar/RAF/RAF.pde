@@ -97,7 +97,7 @@ void refreshCanvas() {
     background(0);
 
     // radar circles
-    stroke(0, 255, 0);
+    stroke(0, 255, 255);
     noFill();
     for (int i = 1; i <= 6; i++)
         ellipse(baseX, baseY, i * 100, i * 100);
@@ -113,7 +113,7 @@ void refreshCanvas() {
 
     // base
     noStroke();
-    fill(0, 255, 0);
+    fill(0, 255, 255);
     ellipse(baseX, baseY, 10, 10);
 }
 
@@ -122,7 +122,8 @@ void drawRadarLine(float angle, float alpha) {
     int endX = baseX + (int) (radius * cos(angle));
     int endY = baseY + (int) (radius * sin(angle));
 
-    stroke(0, 255 * (1 - alpha), 0);
+    alpha = 1 - alpha;
+    stroke(0, 255 * alpha, 255 * alpha);
     line(baseX, baseY, endX, endY);
 }
 
@@ -177,12 +178,12 @@ void checkMissileCollisions() {
 // game over condition
 void gameOver(int state) {
     fill(255);
-    rect(baseX - 100, baseY - 50, 200, 100, 10);
+    rect(baseX - 110, baseY - 50, 220, 100, 10);
 
     textAlign(CENTER);
     textSize(32);
     if (state == 1) {
-        fill(0, 127, 255);
+        fill(0, 63, 191);
         text("You win!", baseX, baseY + 12);
     } else {
         fill(255, 0, 127);

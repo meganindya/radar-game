@@ -1,5 +1,5 @@
 class Missile {
-    static final float speed = 3, size = 2.5;
+    static final float speed = 3, size = 3;
     private float angle, dist;
     private int posX, posY, detectableRange;
 
@@ -19,8 +19,8 @@ class Missile {
     }
 
     void render() {
-        noStroke();
-        fill(0, 0, 255);
+        stroke(255, 255, 0);
+        fill(0, 255, 63);
         ellipse(posX, posY, size, size);
     }
 
