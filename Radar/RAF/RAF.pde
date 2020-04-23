@@ -135,6 +135,7 @@ int getGameState() {
     return 0;
 }
 
+// checks and removes missile-threat collisions
 void checkMissileCollisions() {
     ArrayList<Missile> missileRemoveList = new ArrayList<Missile>();
     for (Missile missile : missiles) {
@@ -173,10 +174,28 @@ void checkMissileCollisions() {
         missiles.remove(missile);
 }
 
+// game over condition
 void gameOver(int state) {
+    fill(255);
+    rect(baseX - 100, baseY - 50, 200, 100, 10);
 
+    textAlign(CENTER);
+    textSize(32);
+    if (state == 1) {
+        fill(0, 127, 255);
+        text("You win!", baseX, baseY + 12);
+    } else {
+        fill(255, 0, 127);
+        text("You lose!", baseX, baseY + 12);
+    }
 }
 
+// mouse press event
 void mousePressed() {
-    missiles.add(new Missile(radius, mouseX, mouseY));
+    int state = getGameState();
+    if (state == 0)
+        missiles.add(new Missile(radius, mouseX, mouseY));
+    else {
+        reset();
+    }
 }
