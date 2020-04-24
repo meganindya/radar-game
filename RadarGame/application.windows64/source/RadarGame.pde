@@ -18,9 +18,9 @@ float swipeAngle, swipeSpeed;
 // action bodies
 HashMap<Integer, ArrayList<Threat>> angleMap;
 ArrayList<Threat> threats;
-final int threatCount = 5;
+final int threatCount = 50;
 ArrayList<Missile> missiles;
-final int missileMax = 5;
+final int missileMax = 50;
 boolean baseDestroyed;
 
 boolean started = false;
