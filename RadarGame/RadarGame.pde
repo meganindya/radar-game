@@ -25,7 +25,7 @@ boolean baseDestroyed;
 
 boolean started = false;
 
-int score, hiscore = 0;
+int score, hiscore = 0, penalty;
 HashMap<Missile, Integer> missileScoreMap;
 
 
@@ -64,6 +64,7 @@ void reset() {
     baseDestroyed = false;
 
     score = 0;
+    penalty = 0;
     missileScoreMap = new HashMap<Missile, Integer>();
 }
 
@@ -97,6 +98,10 @@ void draw() {
     for (Missile missile : missiles) {
         if (missile.outOfBounds()) {
             missileRemoveList.add(missile);
+            if (score > 0) {
+                score--;
+                penalty--;
+            }
             continue;
         }
         missile.render();
@@ -193,8 +198,15 @@ void checkMissileCollisions() {
         if (!missileScoreMap.containsKey(missile))
             continue;
         score += missileScoreMap.get(missile);
-        if (score > hiscore)
-            hiscore = score;
+        if (penalty > 0) {
+            if (score < penalty) {
+                score = 0;
+                penalty -= score;
+            } else {
+                score -= penalty;
+                penalty = 0;
+            }
+        }
         missileScoreMap.remove(missile);
     }
 }
@@ -210,11 +222,18 @@ void gameOver(int state) {
         fill(0, 63, 191);
         text("You win!", baseX, baseY + 12);
     } else if (state == -1) {
+        if (penalty > 0)
+            score = score > penalty ? score - penalty : 0;
         fill(255, 0, 127);
         text("You lose!", baseX, baseY + 12);
     } else {
         fill(0, 127, 63);
         text("Click to start", baseX, baseY + 12);
+    }
+
+    if (state == 1 || state == -1) {
+        hiscore = max(hiscore, score);
+        displayScores();
     }
 }
 
@@ -230,8 +249,9 @@ void mousePressed() {
                     new Missile(radius, mouseX, mouseY);
                 missiles.add(missile);
                 int missileScore = getScore(missile);
-                if (missileScore != 0)
-                    missileScoreMap.put(missile, missileScore);
+                missileScoreMap.put(missile, missileScore);
+                if (missileScore == 0)
+                    penalty++;
             }
         }
         else
@@ -290,6 +310,9 @@ int getScore(Missile missile) {
 }
 
 void displayScores() {
+    noStroke();
+    fill(0);
+    rect(0,0,120,60);
     textAlign(LEFT);
     textSize(16);
     fill(255, 255, 255);
